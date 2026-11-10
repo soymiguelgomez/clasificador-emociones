@@ -1,0 +1,89 @@
+{
+  "raw_rows": 416809,
+  "raw_nulls": 0,
+  "class_counts_raw": {
+    "sadness": 121187,
+    "joy": 141067,
+    "love": 34554,
+    "anger": 57317,
+    "fear": 47712,
+    "surprise": 14972
+  },
+  "rows_modified_by_cleaning": 7799,
+  "rows_empty_after_cleaning": 0,
+  "exact_duplicates_removed": 838,
+  "conflicting_texts": 22288,
+  "conflicting_rows_removed": 44582,
+  "conflict_rows_removed_by_class": {
+    "sadness": 4944,
+    "joy": 11411,
+    "love": 10115,
+    "anger": 4907,
+    "fear": 8078,
+    "surprise": 5127
+  },
+  "conflict_label_pairs": {
+    "joy|love": 10115,
+    "fear|surprise": 3727,
+    "sadness|anger": 2694,
+    "anger|fear": 2214,
+    "sadness|fear": 2138,
+    "joy|surprise": 1286,
+    "sadness|surprise": 114,
+    "joy|anger": 5,
+    "joy|fear": 5,
+    "sadness|joy": 3
+  },
+  "clean_rows": 371389,
+  "class_counts_clean": {
+    "sadness": 116011,
+    "joy": 129299,
+    "love": 24364,
+    "anger": 52320,
+    "fear": 39572,
+    "surprise": 9823
+  },
+  "text_overlap_between_splits": {
+    "train_val": 0,
+    "train_test": 0,
+    "val_test": 0
+  },
+  "split_sizes": {
+    "train": 297111,
+    "val": 37139,
+    "test": 37139
+  },
+  "class_counts_by_split": {
+    "train": {
+      "sadness": 92809,
+      "joy": 103439,
+      "love": 19490,
+      "anger": 41856,
+      "fear": 31658,
+      "surprise": 7859
+    },
+    "val": {
+      "sadness": 11601,
+      "joy": 12930,
+      "love": 2437,
+      "anger": 5232,
+      "fear": 3957,
+      "surprise": 982
+    },
+    "test": {
+      "sadness": 11601,
+      "joy": 12930,
+      "love": 2437,
+      "anger": 5232,
+      "fear": 3957,
+      "surprise": 982
+    }
+  },
+  "words_per_text": {
+    "mean": 19.11,
+    "median": 17.0,
+    "p95": 41.0,
+    "p99": 52.0,
+    "max": 178
+  }
+}

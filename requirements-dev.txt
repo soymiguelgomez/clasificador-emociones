@@ -1,0 +1,9 @@
+# Dependencias de DESARROLLO: preparación de datos, entrenamiento, evaluación y pruebas.
+# Versiones verificadas con Python 3.13 en Windows 11.
+-r requirements.txt
+tensorflow==2.21.0
+keras==3.15.1
+pandas==3.0.5
+scikit-learn==1.9.1
+matplotlib==3.11.2
+pytest==9.2.0

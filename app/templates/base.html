@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Clasificador de emociones{% endblock %}</title>
+  <meta name="description" content="Red neuronal BiLSTM que identifica la emoción expresada en una frase en inglés.">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-row">
+      <a class="brand" href="{{ url_for('main.index') }}">
+        <span class="brand-mark" aria-hidden="true"></span>Clasificador de emociones
+      </a>
+      <nav aria-label="Principal">
+        <a href="{{ url_for('main.index') }}" {% if request.endpoint == 'main.index' %}aria-current="page"{% endif %}>Analizar texto</a>
+        <a href="{{ url_for('main.results') }}" {% if request.endpoint == 'main.results' %}aria-current="page"{% endif %}>Resultados del modelo</a>
+      </nav>
+    </div>
+  </header>
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="site-footer">
+    <div class="container">
+      Proyecto final de Inteligencia Artificial · Red neuronal BiLSTM (TensorFlow/Keras) y Flask.
+      Herramienta académica: no sustituye una evaluación psicológica profesional.
+    </div>
+  </footer>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

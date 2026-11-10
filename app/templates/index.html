@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <h1>¿Qué emoción expresa una frase?</h1>
+  <p>
+    Las personas describen cómo se sienten en reseñas, mensajes y diarios, y leer miles de esos
+    textos a mano no es viable. Este sistema usa una <strong>red neuronal LSTM bidireccional</strong>,
+    entrenada con casi 300.000 frases en inglés, para identificar cuál de seis emociones
+    —tristeza, alegría, amor, ira, miedo o sorpresa— predomina en un texto.
+  </p>
+</section>
+
+<section class="card" aria-labelledby="form-title">
+  <h2 id="form-title">Analizar una frase</h2>
+  <form method="post" action="{{ url_for('main.index') }}#resultado" novalidate>
+    <label for="text">Escribe una frase <strong>en inglés</strong> que describa cómo se siente alguien</label>
+    <textarea id="text" name="text" rows="4" maxlength="{{ max_chars }}"
+              placeholder="Ej.: i feel so nervous about my exam tomorrow"
+              aria-describedby="text-help{% if error %} text-error{% endif %}"
+              {% if error %}aria-invalid="true"{% endif %}>{{ text }}</textarea>
+    <div class="form-meta">
+      <span id="text-help">Máximo {{ max_chars }} caracteres. Se analizan las primeras 60 palabras.</span>
+      <span id="counter" aria-live="polite">{{ text|length }} / {{ max_chars }}</span>
+    </div>
+    {% if error %}
+      <p class="alert alert-error" id="text-error" role="alert">{{ error }}</p>
+    {% endif %}
+    <div class="examples">
+      <span class="examples-label">Ejemplos:</span>
+      {% for ex in examples %}
+        <button type="button" class="chip" data-example="{{ ex }}">{{ ex }}</button>
+      {% endfor %}
+    </div>
+    <button type="submit" class="btn-primary">Analizar emoción</button>
+  </form>
+</section>
+
+{% if result %}
+<section class="card result" id="resultado" aria-labelledby="result-title">
+  <h2 id="result-title">Resultado</h2>
+  <div class="result-head">
+    <span class="swatch" style="background: {{ result.color }}" aria-hidden="true"></span>
+    <div>
+      <p class="result-label">{{ result.label_es|capitalize }}</p>
+      <p class="result-sub">Confianza: <strong>{{ result.confidence|prob }}</strong>
+        {% if not result.reliable %}<span class="badge">Resultado poco fiable</span>{% endif %}
+      </p>
+    </div>
+  </div>
+  <p class="explanation">{{ result.explanation }}</p>
+
+  {% for w in result.warnings %}
+    <p class="alert alert-warn" role="status">{{ w }}</p>
+  {% endfor %}
+
+  <h3>Probabilidad por emoción</h3>
+  <ul class="prob-list">
+    {% for p in result.probabilities %}
+    <li>
+      <span class="prob-name">{{ p.label_es|capitalize }}</span>
+      <span class="prob-track" aria-hidden="true">
+        <span class="prob-fill" style="width: {{ '%.2f'|format(p.probability * 100) }}%; background: {{ p.color }}"></span>
+      </span>
+      <span class="prob-value">{{ p.probability|prob }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+
+  <details>
+    <summary>Ver cómo se procesó el texto</summary>
+    <dl class="details-grid">
+      <dt>Texto normalizado</dt><dd><code>{{ result.cleaned_text }}</code></dd>
+      <dt>Palabras</dt><dd>{{ result.n_words }}{% if result.truncated %} (se usaron 60){% endif %}</dd>
+      <dt>Palabras conocidas por el modelo</dt><dd>{{ result.n_known_words }} ({{ result.known_ratio|pct(0) }})</dd>
+    </dl>
+  </details>
+</section>
+{% endif %}
+
+<section class="card" aria-labelledby="how-title">
+  <h2 id="how-title">Cómo funciona</h2>
+  <ol class="steps">
+    <li><strong>Normalización.</strong> El texto pasa a minúsculas y se eliminan signos, números y restos de HTML, igual que en el entrenamiento.</li>
+    <li><strong>Tokenización.</strong> Cada palabra se convierte en un número según un vocabulario de 30.000 palabras aprendido del conjunto de entrenamiento.</li>
+    <li><strong>Red neuronal.</strong> Una capa de <em>embeddings</em> representa cada palabra como un vector; una LSTM bidireccional lee la frase en ambos sentidos y una capa <em>softmax</em> devuelve la probabilidad de cada emoción.</li>
+    <li><strong>Resultado.</strong> Se muestra la emoción más probable, la distribución completa y avisos cuando el texto se aleja de lo que el modelo conoce.</li>
+  </ol>
+  {% if reports.metrics %}
+  <p>
+    En el conjunto de prueba ({{ "{:,}".format(reports.metrics.test.n_test).replace(",", ".") }} frases no vistas durante el entrenamiento)
+    el modelo obtuvo una exactitud del <strong>{{ reports.metrics.test.accuracy|pct(2) }}</strong>
+    y un F1 macro de <strong>{{ "%.3f"|format(reports.metrics.test.macro.f1)|replace(".", ",") }}</strong>.
+    <a href="{{ url_for('main.results') }}">Ver métricas y gráficas</a>.
+  </p>
+  {% endif %}
+  <h3>Limitaciones</h3>
+  <ul>
+    <li>Solo entiende <strong>inglés</strong> y frases parecidas a las del corpus («i feel…»).</li>
+    <li>No interpreta bien la <strong>negación</strong>: «i am not happy» puede clasificarse como alegría.</li>
+    <li>Siempre elige una de las seis emociones, aunque la frase no exprese ninguna o mezcle varias.</li>
+    <li>Es una herramienta académica y no sirve para diagnosticar el estado emocional de nadie.</li>
+  </ul>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    var area = document.getElementById("text");
+    var counter = document.getElementById("counter");
+    var max = area.getAttribute("maxlength");
+    function update() { counter.textContent = area.value.length + " / " + max; }
+    area.addEventListener("input", update);
+    document.querySelectorAll("[data-example]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        area.value = btn.getAttribute("data-example");
+        update();
+        area.focus();
+      });
+    });
+  })();
+</script>
+{% endblock %}

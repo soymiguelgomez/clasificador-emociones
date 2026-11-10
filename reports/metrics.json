@@ -1,0 +1,209 @@
+{
+  "model": "models\\emotion_bilstm.keras",
+  "test": {
+    "n_test": 37139,
+    "accuracy": 0.9926761625245698,
+    "macro": {
+      "precision": 0.9882197144869146,
+      "recall": 0.991446812514742,
+      "f1": 0.9898142800582899
+    },
+    "weighted": {
+      "precision": 0.9927023062691541,
+      "recall": 0.9926761625245698,
+      "f1": 0.9926833016420136
+    },
+    "per_class": {
+      "sadness": {
+        "precision": 0.9963699222126189,
+        "recall": 0.9937074390138781,
+        "f1": 0.9950368995727418,
+        "support": 11601
+      },
+      "joy": {
+        "precision": 0.9968253968253968,
+        "recall": 0.9956689868522816,
+        "f1": 0.9962468562584639,
+        "support": 12930
+      },
+      "love": {
+        "precision": 0.997949979499795,
+        "recall": 0.9987689782519491,
+        "f1": 0.9983593109105825,
+        "support": 2437
+      },
+      "anger": {
+        "precision": 0.9808530805687203,
+        "recall": 0.988914373088685,
+        "f1": 0.9848672313695631,
+        "support": 5232
+      },
+      "fear": {
+        "precision": 0.9862909367859863,
+        "recall": 0.9818043972706596,
+        "f1": 0.9840425531914894,
+        "support": 3957
+      },
+      "surprise": {
+        "precision": 0.971028971028971,
+        "recall": 0.9898167006109979,
+        "f1": 0.9803328290468987,
+        "support": 982
+      }
+    },
+    "confusion_matrix": [
+      [
+        11528,
+        15,
+        2,
+        43,
+        11,
+        2
+      ],
+      [
+        8,
+        12874,
+        3,
+        28,
+        9,
+        8
+      ],
+      [
+        0,
+        2,
+        2434,
+        0,
+        1,
+        0
+      ],
+      [
+        19,
+        15,
+        0,
+        5174,
+        23,
+        1
+      ],
+      [
+        15,
+        9,
+        0,
+        30,
+        3885,
+        18
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        10,
+        972
+      ]
+    ],
+    "top_confusions": [
+      {
+        "true": "sadness",
+        "pred": "anger",
+        "count": 43
+      },
+      {
+        "true": "fear",
+        "pred": "anger",
+        "count": 30
+      },
+      {
+        "true": "joy",
+        "pred": "anger",
+        "count": 28
+      },
+      {
+        "true": "anger",
+        "pred": "fear",
+        "count": 23
+      },
+      {
+        "true": "anger",
+        "pred": "sadness",
+        "count": 19
+      },
+      {
+        "true": "fear",
+        "pred": "surprise",
+        "count": 18
+      }
+    ],
+    "errors": 272,
+    "calibration": {
+      "ece": 0.0023915126669781807,
+      "mean_confidence_correct": 0.9972091317176819,
+      "mean_confidence_wrong": 0.6884442567825317,
+      "share_wrong_with_conf_over_90": 0.20220588235294118
+    }
+  },
+  "baseline_test": {
+    "accuracy": 0.9645655510379924,
+    "macro_f1": 0.954316450547838,
+    "weighted_f1": 0.9647783800496037,
+    "f1_per_class": {
+      "sadness": 0.9696996157876353,
+      "joy": 0.9723428392598678,
+      "love": 0.9419354838709677,
+      "anger": 0.9605288007554297,
+      "fear": 0.9547952047952047,
+      "surprise": 0.9265967588179218
+    }
+  },
+  "training": {
+    "best_epoch": 3,
+    "epochs_run": 6,
+    "best_val_loss": 0.02622292749583721,
+    "best_val_accuracy": 0.991437554359436,
+    "training_minutes": 19.8,
+    "params": 3947462
+  },
+  "figures": [
+    "reports/figures/eval_1_perdida.png",
+    "reports/figures/eval_2_exactitud.png",
+    "reports/figures/eval_3_matriz_confusion.png",
+    "reports/figures/eval_4_f1_por_clase.png",
+    "reports/figures/eval_5_confianza.png"
+  ],
+  "qualitative_probes": [
+    {
+      "case": "negación",
+      "text": "i am not happy at all today",
+      "pred_es": "alegría",
+      "confidence": 0.8643,
+      "known_words": "7/7"
+    },
+    {
+      "case": "negación",
+      "text": "i don t feel scared anymore",
+      "pred_es": "miedo",
+      "confidence": 1.0,
+      "known_words": "6/6"
+    },
+    {
+      "case": "emociones mezcladas",
+      "text": "i feel happy but also a little scared about the future",
+      "pred_es": "alegría",
+      "confidence": 0.9995,
+      "known_words": "11/11"
+    },
+    {
+      "case": "sin emoción explícita",
+      "text": "the meeting is scheduled for monday at ten",
+      "pred_es": "alegría",
+      "confidence": 0.4121,
+      "known_words": "8/8"
+    },
+    {
+      "case": "texto en español",
+      "text": "me siento muy triste hoy",
+      "pred_es": "ira",
+      "confidence": 0.8617,
+      "known_words": "1/5"
+    }
+  ]
+}

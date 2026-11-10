@@ -1,0 +1,21 @@
+# Blueprint de Render: crea el servicio web a partir del repositorio de GitHub.
+# Documentación: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: clasificador-emociones
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    # Un solo proceso (el plan gratuito tiene 512 MB) con varios hilos para atender
+    # peticiones concurrentes. --preload carga el modelo antes de aceptar tráfico.
+    startCommand: gunicorn wsgi:app --workers 1 --threads 4 --timeout 120 --preload --bind 0.0.0.0:$PORT
+    healthCheckPath: /health
+    envVars:
+      - key: MODEL_BACKEND
+        value: numpy
+      - key: PRELOAD_MODEL
+        value: "1"
+      # Las multiplicaciones son pequeñas (una frase por petición): un hilo de BLAS
+      # basta y evita reservar memoria para hilos que no se usan.
+      - key: OPENBLAS_NUM_THREADS
+        value: "1"

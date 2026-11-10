@@ -1,0 +1,6 @@
+# Dependencias de PRODUCCIÓN (aplicación web). Las instala Render.
+# La red se sirve con NumPy (MODEL_BACKEND=numpy), por eso no se necesita TensorFlow.
+# Para entrenar y evaluar, instala requirements-dev.txt.
+Flask==3.1.3
+gunicorn==26.2.0
+numpy==2.5.4

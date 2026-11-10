@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% set m = reports.metrics %}
+{% set d = reports.data %}
+{% macro num(v) %}{{ "{:,}".format(v).replace(",", ".") }}{% endmacro %}
+{% macro dec(v) %}{{ "%.3f"|format(v)|replace(".", ",") }}{% endmacro %}
+{% block title %}Resultados del modelo · Clasificador de emociones{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Resultados del modelo</h1>
+  <p>Todas las cifras y gráficas de esta página proceden de la ejecución real del entrenamiento
+     y de la evaluación sobre el conjunto de prueba, que el modelo no vio al entrenar.</p>
+</section>
+
+<section class="stats" aria-label="Métricas principales">
+  <div class="stat"><span class="stat-value">{{ m.test.accuracy|pct(2) }}</span><span class="stat-label">Exactitud en prueba</span></div>
+  <div class="stat"><span class="stat-value">{{ dec(m.test.macro.f1) }}</span><span class="stat-label">F1 macro (red neuronal)</span></div>
+  <div class="stat"><span class="stat-value">{{ dec(m.baseline_test.macro_f1) }}</span><span class="stat-label">F1 macro (línea base TF-IDF)</span></div>
+  <div class="stat"><span class="stat-value">{{ num(m.test.n_test) }}</span><span class="stat-label">Frases de prueba</span></div>
+</section>
+
+<section class="card" aria-labelledby="class-title">
+  <h2 id="class-title">Métricas por emoción (conjunto de prueba)</h2>
+  <div class="table-wrap">
+    <table>
+      <caption class="sr-only">Precisión, exhaustividad, F1 y número de textos por emoción</caption>
+      <thead>
+        <tr><th scope="col">Emoción</th><th scope="col">Precisión</th><th scope="col">Exhaustividad (recall)</th><th scope="col">F1</th><th scope="col">F1 línea base</th><th scope="col">Textos</th></tr>
+      </thead>
+      <tbody>
+        {% for name, s in m.test.per_class.items() %}
+        <tr>
+          <th scope="row"><span class="dot" style="background: {{ emotions[name].color }}" aria-hidden="true"></span>{{ labels_es[name]|capitalize }}</th>
+          <td>{{ dec(s.precision) }}</td><td>{{ dec(s.recall) }}</td><td>{{ dec(s.f1) }}</td>
+          <td>{{ dec(m.baseline_test.f1_per_class[name]) }}</td><td>{{ num(s.support) }}</td>
+        </tr>
+        {% endfor %}
+        <tr class="total">
+          <th scope="row">Promedio macro</th>
+          <td>{{ dec(m.test.macro.precision) }}</td><td>{{ dec(m.test.macro.recall) }}</td><td>{{ dec(m.test.macro.f1) }}</td>
+          <td>{{ dec(m.baseline_test.macro_f1) }}</td><td>{{ num(m.test.n_test) }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="muted">Errores en prueba: {{ num(m.test.errors) }}. Confusiones más frecuentes:
+    {% for c in m.test.top_confusions[:3] %}{{ labels_es[c.true] }} → {{ labels_es[c.pred] }} ({{ c.count }}){% if not loop.last %}; {% endif %}{% endfor %}.</p>
+</section>
+
+<section class="card" aria-labelledby="train-title">
+  <h2 id="train-title">Datos y entrenamiento</h2>
+  <dl class="details-grid">
+    {% if d %}
+    <dt>Textos en el dataset original</dt><dd>{{ num(d.raw_rows) }}</dd>
+    <dt>Textos tras limpieza</dt><dd>{{ num(d.clean_rows) }} (se excluyeron {{ num(d.exact_duplicates_removed) }} duplicados y {{ num(d.conflicting_rows_removed) }} filas con etiquetas contradictorias)</dd>
+    <dt>Entrenamiento / validación / prueba</dt><dd>{{ num(d.split_sizes.train) }} / {{ num(d.split_sizes.val) }} / {{ num(d.split_sizes.test) }}</dd>
+    {% endif %}
+    <dt>Arquitectura</dt><dd>Embedding (128) → LSTM bidireccional (64 + 64) → Dense (64, ReLU) → Dense (6, softmax)</dd>
+    <dt>Parámetros entrenables</dt><dd>{{ num(m.training.params) }}</dd>
+    <dt>Épocas ejecutadas / mejor época</dt><dd>{{ m.training.epochs_run }} / {{ m.training.best_epoch }} (parada temprana)</dd>
+    <dt>Exactitud en validación (mejor época)</dt><dd>{{ m.training.best_val_accuracy|pct(2) }}</dd>
+    <dt>Tiempo de entrenamiento (CPU)</dt><dd>{{ ("%.1f"|format(m.training.training_minutes))|replace(".", ",") }} minutos</dd>
+  </dl>
+</section>
+
+<section aria-labelledby="fig-title">
+  <h2 id="fig-title" class="section-title">Gráficas</h2>
+  <div class="figure-grid">
+    {% for file, title, caption in figures %}
+    <figure class="card figure">
+      <figcaption><strong>Figura {{ loop.index }}.</strong> {{ title }}</figcaption>
+      <a href="{{ url_for('main.figure', name=file) }}" target="_blank" rel="noopener">
+        <img src="{{ url_for('main.figure', name=file) }}" alt="{{ title }}: {{ caption }}" loading="lazy">
+      </a>
+      <p class="muted">{{ caption }}</p>
+    </figure>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

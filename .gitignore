@@ -1,0 +1,29 @@
+# Entornos y cachés
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Datos (el CSV original pesa ~43 MB; ver README para obtenerlo).
+# data/sample/ sí se incluye: 60 frases de ejemplo.
+data/raw/
+data/processed/
+
+# Checkpoint de entrenamiento (45 MB, incluye el estado del optimizador).
+# Se suben solo los artefactos de inferencia: *_inference.keras, *_weights.npz y tokenizer.json.
+models/emotion_bilstm.keras
+
+# ZIP de entrega (se genera con scripts/make_zip.py)
+dist/
+
+# Secretos
+.env
+
+# Configuración local del editor
+.vscode/
+
+# Sistema
+.DS_Store
+Thumbs.db
